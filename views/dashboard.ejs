@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-dTlzq0TAeq+JvA/mcjqRW9/hzyzCw9NX4BFdy1DdY1U8ixh1kt4X1Jl2N9Oo/We9ZCZQm5+3ouH/ZqiD4eG0w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffe6e6;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        h1, h2, h3 {
+            color: #ff6666;
+        }
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        input[type="text"] {
+            width: calc(100% - 2rem);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ff9999;
+            border-radius: 5px;
+        }
+        button[type="submit"] {
+            background-color: #ff6666;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        button[type="submit"]:hover {
+            background-color: #cc5252;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ff9999;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #ff6666;
+            color: white;
+        }
+        td {
+            background-color: #ffe6e6;
+        }
+        .icon {
+            margin-right: 10px;
+            color: #ff6666;
+        }
+    </style>
+<script>
+    function validateForm() {
+        const rollNoInput = document.getElementById('rollNoInput').value.trim();
+        const currentUserRollNo = '<%= rollNo %>'.trim();
+        const sendTo = JSON.parse('<%- JSON.stringify(sendTo) %>');
+
+        console.log(sendTo);
+        console.log(typeof rollNoInput);
+
+        if (rollNoInput === currentUserRollNo) {
+            alert("You cannot send a heart to yourself.");
+            return false;
+        }
+        for (let i = 0; i < sendTo.length; i++) {
+            if (sendTo[i].trim() === rollNoInput) {
+                alert("You have already sent a heart to this user.");
+                return false;
+            }
+        }
+        return true;
+    }
+</script>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-heart icon"></i>Welcome <%= name %>!</h1>
+        <h2>Send Heart, Heart Remaining: <%= heartsRemaining %></h2>
+        <% if (heartsRemaining > 0) { %>
+            <form action="/dashboard" method="post" onsubmit="return validateForm()">
+                <div class="form-group">
+                    <label for="rollNo">Roll Number</label>
+                    <input id="rollNoInput" name="rollNo" placeholder="rollNo" required>
+                </div>
+                <button type="submit"><i class="fas fa-heart"></i> Submit</button>
+            </form>
+        <% } %>
+        <% if (heartsRemaining <= 0) { %>
+            <h3>Sorry, you ran out of hearts <i class="fas fa-heart-broken"></i></h3>
+        <% } %>
+        <h3><i class="fas fa-heart icon"></i>Heart Received: <%= heartsRecived %></h3>
+        <h3><i class="fas fa-heart icon"></i>Matches: <%= matches %></h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Roll No</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for (let index = 0; index < matchedRollNo.length; index++) { %>
+                    <tr>
+                        <td><%= matchedName[index] %></td>
+                        <td><%= matchedRollNo[index] %></td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
